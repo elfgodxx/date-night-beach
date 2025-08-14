@@ -1,293 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Starry Night at the Beach ✨</title>
-  <meta name="description" content="A little starry-night invitation for Sophia to go to Uraya Beach Sands." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --night-top: #0a0f2c;
-      --night-mid: #0d1a47;
-      --night-bottom: #0b224f;
-      --sand: #1c2a5a; /* dark sand, blends with night */
-      --moon: #f2f5ff;
-      --accent: #ffd2e1;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%; margin:0}
-    body{
-      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      color:white;
-      background: radial-gradient(1200px 700px at 50% -10%, #1a2a6c00 60%, #00000022 70%, #0000 80%),
-                  linear-gradient(to bottom, var(--night-top), var(--night-mid) 60%, var(--night-bottom) 75%, #0b1b3a 90%);
-      overflow:hidden;
-    }
-
-    /* Star canvas fills screen */
-    #stars, #confetti{position:fixed; inset:0; width:100%; height:100%; display:block; z-index:0}
-
-    /* Moon */
-    .moon{
-      position: fixed; left: 12%; top: 12%; width: 140px; height: 140px; border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #ffffff, var(--moon) 40%, #cfd8ff 60%, #9fb3ff 80%, #7e91d4 100%);
-      box-shadow: 0 0 80px 20px rgba(210, 218, 255, 0.35), 0 0 140px 50px rgba(160, 190, 255, 0.15);
-      z-index: 1;
-    }
-
-    /* Subtle moon reflection on water */
-    .moon-reflection{
-      position: fixed; left: 50%; transform: translateX(-50%);
-      bottom: 28vh; width: 40vw; height: 18vh; filter: blur(8px); opacity: 0.35; z-index:1;
-      background: radial-gradient(ellipse at center, rgba(210,218,255,0.6), rgba(210,218,255,0.0) 60%);
-      pointer-events:none;
-    }
-
-    /* Ocean waves (parallax layers) */
-    .ocean{ position: fixed; left:0; right:0; bottom:0; height: 35vh; z-index: 2; pointer-events:none; }
-    .wave{ position:absolute; left:-25%; right:-25%; bottom:0; height: 55%; border-radius: 45% 55% 0 0 / 60% 60% 0 0; opacity: 0.55; filter: blur(0.3px);}
-    .wave:nth-child(1){ background: linear-gradient(#0c2b69, #0a2f73); animation: swell1 14s ease-in-out infinite; opacity:0.65}
-    .wave:nth-child(2){ background: linear-gradient(#0a2f73, #083671); height: 65%; animation: swell2 18s ease-in-out infinite; opacity:0.5}
-    .wave:nth-child(3){ background: linear-gradient(#07366f, #063a72); height: 75%; animation: swell3 22s ease-in-out infinite; opacity:0.45}
-    @keyframes swell1{ 0%,100%{transform: translateY(0) translateX(0)} 50%{transform: translateY(-12px) translateX(2%)} }
-    @keyframes swell2{ 0%,100%{transform: translateY(0) translateX(0)} 50%{transform: translateY(-18px) translateX(-2%)} }
-    @keyframes swell3{ 0%,100%{transform: translateY(0) translateX(0)} 50%{transform: translateY(-22px) translateX(1%)} }
-
-    /* Foreground beach ledge */
-    .shore{ position: fixed; left:0; right:0; bottom:0; height: 10vh; background: linear-gradient(#0d1d49, #081331); z-index:3;}
-
-    /* Content */
-    .wrap{ position: relative; z-index: 4; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 2rem;}
-
-    h1{
-      font-family: 'Great Vibes', cursive; font-size: clamp(2.6rem, 7vw, 6rem); margin:0 0 0.5rem; line-height:1.05;
-      text-shadow: 0 2px 24px rgba(255,255,255,0.35);
-    }
-
-    .sub{
-      font-size: clamp(1rem, 2.4vw, 1.2rem); opacity:0.9; max-width: 720px; margin: 0.25rem auto 1.75rem;
-    }
-
-    .cta{
-      display:inline-flex; align-items:center; gap:.6rem; padding:.9rem 1.25rem; border-radius: 999px;
-      background: linear-gradient(135deg, #ff85b7, #7aa2ff);
-      color:#0b0f2a; font-weight:700; letter-spacing: .2px; border: none; cursor:pointer; font-size:1.05rem;
-      box-shadow: 0 10px 30px rgba(122,162,255,.35), inset 0 -2px 0 rgba(255,255,255,.35);
-      transition: transform .15s ease, filter .15s ease;
-    }
-    .cta:hover{ transform: translateY(-2px); filter: brightness(1.05)}
-    .cta:active{ transform: translateY(0)}
-
-    .reveal{
-      margin-top: 1.25rem; font-size: 1rem; opacity:0; transform: translateY(12px);
-      transition: opacity .5s ease, transform .5s ease; pointer-events:none;
-    }
-    .reveal.show{ opacity:1; transform: translateY(0); pointer-events:auto }
-
-    /* Shooting star (occasional) */
-    .shooting-star{ position: fixed; width: 2px; height: 2px; background: white; box-shadow: 0 0 8px 2px #fff; z-index:1; opacity:0 }
-
-    /* Audio control */
-    .audio-toggle{ position: fixed; right: 14px; bottom: 14px; z-index: 10; background: rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25);
-      backdrop-filter: blur(6px); color: #fff; padding: .55rem .9rem; border-radius: 999px; cursor: pointer; font-size:.9rem }
-
-    /* Tap to start overlay for mobile autoplay policies */
-    .start-overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,.55); z-index: 20;}
-    .start-card{ background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.2); padding: 1rem 1.25rem; border-radius: 16px; text-align:center; max-width: 420px}
-    .start-card button{ margin-top:.75rem }
-
-    /* Small helper */
-    .muted{ opacity:.75; font-size:.9rem }
-
-    @media (max-width: 520px){
-      .moon{ left: 8%; top: 8%; width: 110px; height:110px }
-      .moon-reflection{ bottom: 30vh; width: 62vw }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Starry Night at the Beach</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    font-family: 'Segoe UI', cursive;
+    color: white;
+  }
+  canvas {
+    position: absolute;
+    top: 0; left: 0;
+    z-index: 0;
+  }
+  .overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s ease;
+    z-index: 10;
+  }
+  .overlay button {
+    padding: 1em 2em;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 8px;
+    background: #f5a623;
+    cursor: pointer;
+  }
+  h1, p {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  #invite-message {
+    display: none;
+    font-size: 1.5em;
+    text-align: center;
+    margin-top: 20px;
+    color: #ffebcd;
+    text-shadow: 0 0 10px rgba(255,255,255,0.8);
+    z-index: 1;
+  }
+  #sayYes {
+    padding: 1em 2em;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 8px;
+    background: #ff69b4;
+    cursor: pointer;
+    z-index: 1;
+  }
+</style>
 </head>
 <body>
-  <canvas id="stars" aria-hidden="true"></canvas>
-  <canvas id="confetti" aria-hidden="true"></canvas>
-  <div class="moon" aria-hidden="true"></div>
-  <div class="moon-reflection" aria-hidden="true"></div>
+<canvas id="stars"></canvas>
+<div class="overlay" id="overlay">
+  <button id="beginButton">Begin</button>
+</div>
+<h1>Hi Sophia,</h1>
+<p>How about a night at Uraya Beach Sands?</p>
+<button id="sayYes">Say Yes ✨</button>
+<div id="invite-message">Sophia, I can’t wait to hold your hand at Uraya Beach Sands 🌊 and watch the stars with you all night ✨</div>
+<audio id="oceanSound" src="assets/ocean-waves.mp3" loop></audio>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+  const overlay = document.getElementById('overlay');
+  const beginButton = document.getElementById('beginButton');
+  const oceanSound = document.getElementById('oceanSound');
+  beginButton.addEventListener('click', () => {
+    oceanSound.play().catch(err => console.log(err));
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.style.display = 'none';
+    }, 800);
+  });
 
-  <div class="ocean" aria-hidden="true">
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-  </div>
-  <div class="shore" aria-hidden="true"></div>
-
-  <main class="wrap" role="main">
-    <h1>Hi Sophia,</h1>
-    <p class="sub">How about a beach date under the stars at <strong>Uraya Beach Sands</strong>?
-      <br><span class="muted">I’ll bring the snacks. You bring that smile.</span></p>
-    <button id="yesBtn" class="cta" aria-controls="reveal" aria-expanded="false">Say Yes ✨</button>
-    <div id="reveal" class="reveal" role="region" aria-live="polite">
-      <p><strong>Plan:</strong> Stargaze, sandy toes, and ocean whispers at <em>Uraya Beach Sands</em>.
-      <br><span class="muted">We can pick the perfect date together. 🌙</span></p>
-    </div>
-  </main>
-
-  <!-- Audio (add your own file to /assets/ocean-waves.mp3 for best results) -->
-  <audio id="waves" loop preload="auto">
-    <source src="assets/ocean-waves.mp3" type="audio/mpeg" />
-    <!-- Fallback note: add a local file named ocean-waves.mp3 in an assets/ folder. -->
-  </audio>
-  <button id="audioToggle" class="audio-toggle" aria-pressed="false" aria-label="Toggle ocean sounds">🔊 Ocean on</button>
-
-  <div id="startOverlay" class="start-overlay" hidden>
-    <div class="start-card">
-      <div style="font-size:1.15rem; font-weight:600; margin-bottom:.35rem">Tap to start the magic ✨</div>
-      <div class="muted">We’ll enable stars and ocean sounds (you can mute anytime).</div>
-      <button class="cta" id="startBtn">Begin</button>
-    </div>
-  </div>
-
-  <script>
-    // --- Utilities
-    const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
-
-    // --- Starfield
-    (function starfield(){
-      const canvas = document.getElementById('stars');
-      const ctx = canvas.getContext('2d');
-      let w, h, stars = [], starCount;
-
-      function resize(){
-        w = canvas.width = innerWidth * devicePixelRatio;
-        h = canvas.height = innerHeight * devicePixelRatio;
-        starCount = Math.floor((innerWidth * innerHeight) / 1800);
-        stars = Array.from({length: starCount}, () => ({
-          x: Math.random()*w,
-          y: Math.random()*h*0.75,
-          r: (Math.random()*1.1+0.2) * devicePixelRatio,
-          a: Math.random()*0.6+0.2,
-          tw: Math.random()*0.02+0.005
-        }));
-      }
-      function draw(){
-        ctx.clearRect(0,0,w,h);
-        for(const s of stars){
-          s.a += s.tw;
-          const alpha = 0.6 + Math.sin(s.a)*0.35;
-          ctx.globalAlpha = alpha;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-        requestAnimationFrame(draw);
-      }
-      addEventListener('resize', resize);
-      resize();
-      draw();
-    })();
-
-    // --- Shooting star occasionally
-    (function shootingStars(){
-      function spawn(){
-        const el = document.createElement('div');
-        el.className = 'shooting-star';
-        const startX = Math.random()*window.innerWidth*0.6 + window.innerWidth*0.2;
-        const startY = Math.random()*window.innerHeight*0.25 + 20;
-        el.style.left = startX+'px';
-        el.style.top = startY+'px';
-        document.body.appendChild(el);
-        el.animate([
-          {opacity:0, transform:'translate(0,0)'},
-          {opacity:1, offset:0.1},
-          {opacity:0, transform:'translate(-220px, 140px)'},
-        ], {duration: 1800, easing:'ease-out'}).onfinish = ()=> el.remove();
-      }
-      setInterval(()=>{ if(Math.random()<0.5) spawn(); }, 4500);
-    })();
-
-    // --- Confetti (tiny, lightweight)
-    (function confetti(){
-      const canvas = document.getElementById('confetti');
-      const ctx = canvas.getContext('2d');
-      let w, h, parts = [], running=false;
-
-      function resize(){ w = canvas.width = innerWidth * devicePixelRatio; h = canvas.height = innerHeight * devicePixelRatio; }
-      addEventListener('resize', resize); resize();
-
-      function burst(x, y, n=120){
-        for(let i=0;i<n;i++){
-          const angle = Math.random()*Math.PI*2;
-          const speed = Math.random()*6+3;
-          parts.push({
-            x:x*devicePixelRatio, y:y*devicePixelRatio,
-            vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
-            g: Math.random()*0.2+0.08, life: Math.random()*90+60, size: Math.random()*3+1
-          });
-        }
-        if(!running){ running=true; animate(); }
-      }
-
-      function animate(){
-        ctx.clearRect(0,0,w,h);
-        parts = parts.filter(p=>p.life>0);
-        for(const p of parts){
-          p.vy += p.g; p.x += p.vx; p.y += p.vy; p.life--;
-          ctx.globalAlpha = clamp(p.life/120, 0, 1);
-          ctx.fillStyle = 'white';
-          ctx.fillRect(p.x, p.y, p.size, p.size*0.6);
-        }
-        ctx.globalAlpha = 1;
-        if(parts.length>0) requestAnimationFrame(animate); else running=false;
-      }
-      window._confettiBurst = burst;
-    })();
-
-    // --- CTA interactions
-    const yesBtn = document.getElementById('yesBtn');
-    const reveal = document.getElementById('reveal');
-    yesBtn.addEventListener('click', (e)=>{
-      const rect = yesBtn.getBoundingClientRect();
-      const x = rect.left + rect.width/2; const y = rect.top + rect.height/2;
-      window._confettiBurst(x, y);
-      reveal.classList.add('show');
-      yesBtn.setAttribute('aria-expanded','true');
+  const sayYesButton = document.getElementById('sayYes');
+  const inviteMessage = document.getElementById('invite-message');
+  sayYesButton.addEventListener('click', () => {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 }
     });
+    inviteMessage.style.display = 'block';
+  });
 
-    // --- Audio handling
-    const audio = document.getElementById('waves');
-    const audioToggle = document.getElementById('audioToggle');
-    let audioOn = true;
+  // Starfield animation
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
 
-    function updateAudioUI(){ audioToggle.textContent = audioOn ? '🔊 Ocean on' : '🔇 Ocean off'; audioToggle.setAttribute('aria-pressed', String(audioOn)); }
+  const stars = Array.from({ length: 200 }, () => {
+    return {
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 1.5,
+      d: Math.random() * 0.5
+    };
+  });
 
-    audioToggle.addEventListener('click', ()=>{
-      audioOn = !audioOn; updateAudioUI();
-      if(audioOn){ audio.play().catch(()=>{}); } else { audio.pause(); }
+  function drawStars() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = 'white';
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
     });
+    moveStars();
+  }
 
-    // Respect autoplay policies — show overlay until user interacts
-    const startOverlay = document.getElementById('startOverlay');
-    const startBtn = document.getElementById('startBtn');
-    function needOverlay(){
-      // If there's no audio file provided, skip overlay.
-      // We still keep the button to allow user to enable future audio if added later.
-      return true;
-    }
-    if(needOverlay()){
-      startOverlay.hidden = false;
-    }
-    function startExperience(){
-      startOverlay.hidden = true;
-      if(audioOn){ audio.play().catch(()=>{}); }
-    }
-    startBtn.addEventListener('click', startExperience);
+  function moveStars() {
+    stars.forEach(s => {
+      s.y += s.d;
+      if (s.y > h) {
+        s.y = 0;
+        s.x = Math.random() * w;
+      }
+    });
+  }
 
-    // In case user interacts anywhere else first
-    window.addEventListener('pointerdown', ()=>{
-      if(!startOverlay.hidden){ startExperience(); }
-    }, { once: true });
-  </script>
+  function animate() {
+    drawStars();
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
 </body>
 </html>
