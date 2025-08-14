@@ -8,15 +8,22 @@
   html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
     height: 100%;
     background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
     font-family: 'Segoe UI', cursive;
     color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
   }
   canvas {
-    position: absolute;
+    position: fixed;
     top: 0; left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 0;
   }
   .overlay {
@@ -26,42 +33,29 @@
     height: 100%;
     background: rgba(0,0,0,0.85);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: opacity 0.8s ease;
     z-index: 10;
+    transition: opacity 0.8s ease;
   }
-  .overlay button {
+  button {
     padding: 1em 2em;
     font-size: 1.2em;
     border: none;
     border-radius: 8px;
-    background: #f5a623;
     cursor: pointer;
+    z-index: 2;
   }
-  h1, p {
-    text-align: center;
-    position: relative;
-    z-index: 1;
-  }
+  #beginButton { background: #f5a623; }
+  #sayYes { background: #ff69b4; margin-top: 20px; }
   #invite-message {
     display: none;
     font-size: 1.5em;
-    text-align: center;
-    margin-top: 20px;
     color: #ffebcd;
     text-shadow: 0 0 10px rgba(255,255,255,0.8);
-    z-index: 1;
-  }
-  #sayYes {
-    padding: 1em 2em;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 8px;
-    background: #ff69b4;
-    cursor: pointer;
-    z-index: 1;
+    margin-top: 20px;
+    z-index: 2;
+    max-width: 90%;
   }
 </style>
 </head>
@@ -70,7 +64,7 @@
 <div class="overlay" id="overlay">
   <button id="beginButton">Begin</button>
 </div>
-<h1>Hi Buns,</h1>
+<h1>Hi Sophia,</h1>
 <p>How about a night at Uraya Beach Sands?</p>
 <button id="sayYes">Say Yes ✨</button>
 <div id="invite-message">Sophia, I can’t wait to hold your hand at Uraya Beach Sands 🌊 and watch the stars with you all night ✨</div>
@@ -83,23 +77,16 @@
   beginButton.addEventListener('click', () => {
     oceanSound.play().catch(err => console.log(err));
     overlay.style.opacity = '0';
-    setTimeout(() => {
-      overlay.style.display = 'none';
-    }, 800);
+    setTimeout(() => overlay.style.display = 'none', 800);
   });
 
   const sayYesButton = document.getElementById('sayYes');
   const inviteMessage = document.getElementById('invite-message');
   sayYesButton.addEventListener('click', () => {
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
     inviteMessage.style.display = 'block';
   });
 
-  // Starfield animation
   const canvas = document.getElementById('stars');
   const ctx = canvas.getContext('2d');
   let w, h;
@@ -110,14 +97,12 @@
   window.addEventListener('resize', resize);
   resize();
 
-  const stars = Array.from({ length: 200 }, () => {
-    return {
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.5,
-      d: Math.random() * 0.5
-    };
-  });
+  const stars = Array.from({ length: 200 }, () => ({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    r: Math.random() * 1.5,
+    d: Math.random() * 0.5
+  }));
 
   function drawStars() {
     ctx.clearRect(0, 0, w, h);
@@ -127,24 +112,16 @@
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fill();
     });
-    moveStars();
-  }
-
-  function moveStars() {
     stars.forEach(s => {
       s.y += s.d;
-      if (s.y > h) {
-        s.y = 0;
-        s.x = Math.random() * w;
-      }
+      if (s.y > h) { s.y = 0; s.x = Math.random() * w; }
     });
   }
 
-  function animate() {
+  (function animate() {
     drawStars();
     requestAnimationFrame(animate);
-  }
-  animate();
+  })();
 </script>
 </body>
 </html>
